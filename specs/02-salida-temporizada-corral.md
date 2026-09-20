@@ -1,6 +1,6 @@
 # SPEC 02 — Salida temporizada y escalonada del corral
 
-> **Estado:** Approved
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-20
 > **Objetivo:** Liberar a los fantasmas del corral por temporizador escalonado (0–4.5 s, del menos al más agresivo) de forma independiente al movimiento de Pac-Man, con rebote vertical en la espera y salida a pie por la puerta.
