@@ -16,6 +16,12 @@ const GHOST_SPEED = 0.1;    // 1/10 celda/frame
 const SHY_THRESHOLD = 8;
 const SHY_CORNER = { x: 1, y: 29 };
 
+// Salida escalonada del corral (ticks a ~60 fps, como las velocidades):
+// 0 / 1.5 / 3 / 4.5 s, del menos al mas agresivo.
+const RELEASE_TICKS = { shy: 0, flanker: 90, ambusher: 180, hunter: 270 };
+const PEN_EXIT = { x: 13, y: 11 }; // celda sobre la puerta (cols 13-14, fila 12)
+const PEN = { x0: 11, x1: 16, y0: 12, y1: 15 }; // corral: interior (filas 13-15) + fila de puerta
+
 // Crea una partida nueva. Copia MAZE (pristino) a game.grid para poder comer
 // dots sin destruir el original, y reiniciar.
 function createGame() {
@@ -31,6 +37,7 @@ function createGame() {
     score: 0,
     lives: 3,
     dotsRemaining: dots,
+    tick: 0,
     grid,
     pacman: {
       x: PACMAN_START.x,
@@ -45,6 +52,7 @@ function createGame() {
       dir: 'up',
       speed: GHOST_SPEED,
       kind: g.kind,
+      releasedAt: RELEASE_TICKS[ g.kind ],
     } ) ),
   };
 }
