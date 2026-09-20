@@ -216,6 +216,7 @@ function moveGhost( game, g ) {
 }
 
 function resetPositions( game ) {
+  game.tick = 0;
   const p = game.pacman;
   p.x = PACMAN_START.x;
   p.y = PACMAN_START.y;
