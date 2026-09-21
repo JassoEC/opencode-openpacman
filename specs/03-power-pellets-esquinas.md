@@ -1,6 +1,6 @@
 # SPEC 03 — Cuatro power pellets clásicos en las esquinas
 
-> **Estado:** Approved
+> **Estado:** Implementado
 > **Depende de:** Ninguna (solo el juego base; no toca fantasmas)
 > **Fecha:** 2026-09-20
 > **Objetivo:** Añadir 4 power pellets clásicos (punto grande parpadeante de 50 puntos) en las cuatro esquinas del tablero, contando para la victoria igual que los dots.
@@ -43,15 +43,15 @@
 
 ## Criterios de aceptación
 
-- [ ] Al abrir `src/index.html` no hay errores en la consola del navegador.
-- [ ] Se ven exactamente 4 power pellets en (1,3), (26,3), (1,23), (26,23).
-- [ ] Cada pellet es un punto claramente mayor que un dot normal y parpadea (alterna visible/invisible).
-- [ ] Comer un power pellet suma exactamente 50 puntos (verificable en el HUD).
-- [ ] El pellet comido no reaparece al perder una vida (mismo comportamiento que los dots).
-- [ ] El `dotsRemaining` inicial cuenta dots + pellets (verificable en consola).
-- [ ] GANASTE solo aparece tras comer todos los dots y los 4 pellets.
-- [ ] Comer un pellet no altera el comportamiento de los fantasmas.
-- [ ] Pac-Man atraviesa la celda del pellet con normalidad (no es muro).
+- [x] Al abrir `src/index.html` no hay errores en la consola del navegador.
+- [x] Se ven exactamente 4 power pellets en (1,3), (26,3), (1,23), (26,23).
+- [x] Cada pellet es un punto claramente mayor que un dot normal y parpadea (alterna visible/invisible).
+- [x] Comer un power pellet suma exactamente 50 puntos (verificable en el HUD).
+- [x] El pellet comido no reaparece al perder una vida (mismo comportamiento que los dots).
+- [x] El `dotsRemaining` inicial cuenta dots + pellets (verificable en consola).
+- [x] GANASTE solo aparece tras comer todos los dots y los 4 pellets.
+- [x] Comer un pellet no altera el comportamiento de los fantasmas.
+- [x] Pac-Man atraviesa la celda del pellet con normalidad (no es muro).
 
 ## Decisiones
 
