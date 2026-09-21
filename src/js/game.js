@@ -16,6 +16,12 @@ const GHOST_SPEED = 0.1;    // 1/10 celda/frame
 const SHY_THRESHOLD = 8;
 const SHY_CORNER = { x: 1, y: 29 };
 
+// Salida escalonada del corral (ticks a ~60 fps, como las velocidades):
+// 0 / 1.5 / 3 / 4.5 s, del menos al mas agresivo.
+const RELEASE_TICKS = { shy: 0, flanker: 90, ambusher: 180, hunter: 270 };
+const PEN_EXIT = { x: 13, y: 11 }; // celda sobre la puerta (cols 13-14, fila 12)
+const PEN = { x0: 11, x1: 16, y0: 12, y1: 15 }; // corral: interior (filas 13-15) + fila de puerta
+
 // Crea una partida nueva. Copia MAZE (pristino) a game.grid para poder comer
 // dots sin destruir el original, y reiniciar.
 function createGame() {
@@ -31,6 +37,7 @@ function createGame() {
     score: 0,
     lives: 3,
     dotsRemaining: dots,
+    tick: 0,
     grid,
     pacman: {
       x: PACMAN_START.x,
@@ -45,6 +52,7 @@ function createGame() {
       dir: 'up',
       speed: GHOST_SPEED,
       kind: g.kind,
+      releasedAt: RELEASE_TICKS[ g.kind ],
     } ) ),
   };
 }
@@ -145,9 +153,11 @@ function ghostTarget( game, g ) {
   return { x: SHY_CORNER.x, y: SHY_CORNER.y };
 }
 
-function decideGhost( game, g ) {
+// Elige direccion del fantasma minimizando la distancia Manhattan al objetivo.
+// Si no se pasa target (null), usa ghostTarget( game, g ) segun el kind (SPEC 01).
+function decideGhost( game, g, target ) {
   const grid = game.grid;
-  const target = ghostTarget( game, g );
+  const t = target || ghostTarget( game, g );
 
   const options = Object.keys( DIRS ).filter(
     ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir, 'ghost' )
@@ -163,7 +173,7 @@ function decideGhost( game, g ) {
     const d = DIRS[ dir ];
     const nx = g.x + d.x;
     const ny = g.y + d.y;
-    const dist = Math.abs( nx - target.x ) + Math.abs( ny - target.y );
+    const dist = Math.abs( nx - t.x ) + Math.abs( ny - t.y );
     if ( dist < bestDist ) {
       bestDist = dist;
       best = dir;
@@ -176,13 +186,29 @@ function moveGhost( game, g ) {
   const grid = game.grid;
   const width = grid[ 0 ].length;
 
+  // Caso A - espera: rebote vertical dentro del corral, sin decideGhost.
+  // Oscila +-0.5 celdas alrededor de su y inicial (14), invirtiendo dir en
+  // los extremos; x no cambia y queda dentro del corral (en el interior).
+  if ( game.tick < g.releasedAt ) {
+    if ( g.y <= 13.5 ) g.dir = 'down';
+    else if ( g.y >= 14.5 ) g.dir = 'up';
+    g.y += DIRS[ g.dir ].y * g.speed;
+    return;
+  }
+
   if ( aligned( g.x ) && aligned( g.y ) ) {
     g.x = Math.round( g.x );
     g.y = Math.round( g.y );
-    decideGhost( game, g );
+
+    // Caso B - liberado pero aun dentro del corral: objetivo fijo PEN_EXIT.
+    const withinPen =
+      g.x >= PEN.x0 && g.x <= PEN.x1 && g.y >= PEN.y0 && g.y <= PEN.y1;
+    decideGhost( game, g, withinPen ? PEN_EXIT : null );
+
     if ( !canMove( grid, g.x, g.y, g.dir, 'ghost' ) ) return;
   }
 
+  // Caso C - fuera del corral / movimiento en curso: AI de SPEC 01.
   const d = DIRS[ g.dir ];
   g.x += d.x * g.speed;
   g.y += d.y * g.speed;
@@ -190,6 +216,7 @@ function moveGhost( game, g ) {
 }
 
 function resetPositions( game ) {
+  game.tick = 0;
   const p = game.pacman;
   p.x = PACMAN_START.x;
   p.y = PACMAN_START.y;
@@ -207,6 +234,7 @@ function collides( a, b ) {
 }
 
 function update( game ) {
+  game.tick++;
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
