@@ -1,6 +1,6 @@
 # SPEC 03 — Cuatro power pellets clásicos en las esquinas
 
-> **Estado:** Borrador
+> **Estado:** Approved
 > **Depende de:** Ninguna (solo el juego base; no toca fantasmas)
 > **Fecha:** 2026-09-20
 > **Objetivo:** Añadir 4 power pellets clásicos (punto grande parpadeante de 50 puntos) en las cuatro esquinas del tablero, contando para la victoria igual que los dots.
