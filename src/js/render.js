@@ -66,15 +66,23 @@ function drawDoor( ctx, grid ) {
   ctx.stroke();
 }
 
-function drawDots( ctx, grid ) {
+function drawDots( ctx, grid, frame ) {
   ctx.fillStyle = DOT_COLOR;
+  const pelletVisible = ( frame % 20 ) < 10; // parpadeo arcade ~0.33 s por fase
   for ( let y = 0; y < grid.length; y++ ) {
     for ( let x = 0; x < grid[ 0 ].length; x++ ) {
-      if ( grid[ y ][ x ] !== 2 ) continue;
-      const { cx, cy } = cellCenter( x, y );
-      ctx.beginPath();
-      ctx.arc( cx, cy, 2.5, 0, Math.PI * 2 );
-      ctx.fill();
+      const v = grid[ y ][ x ];
+      if ( v === 2 ) {
+        const { cx, cy } = cellCenter( x, y );
+        ctx.beginPath();
+        ctx.arc( cx, cy, 2.5, 0, Math.PI * 2 );
+        ctx.fill();
+      } else if ( v === 4 && pelletVisible ) {
+        const { cx, cy } = cellCenter( x, y );
+        ctx.beginPath();
+        ctx.arc( cx, cy, 7, 0, Math.PI * 2 );
+        ctx.fill();
+      }
     }
   }
 }
@@ -157,7 +165,7 @@ function draw( ctx, game, frame ) {
 
   drawWalls( ctx, grid );
   drawDoor( ctx, grid );
-  drawDots( ctx, grid );
+  drawDots( ctx, grid, frame );
   drawPacman( ctx, game.pacman, frame );
   game.ghosts.forEach( ( g, i ) => drawGhost( ctx, g, GHOST_COLORS[ i ] || '#ff0000' ) );
   drawHUD( ctx, game, W );
